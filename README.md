@@ -56,3 +56,25 @@ Pastikan Anda sudah menginstal:
     ```
 
 ## 📂 Struktur Folder
+
+## 📂 Struktur Folder
+
+Berikut adalah struktur direktori proyek ini berdasarkan implementasi saat ini:
+
+```text
+DJP/
+├── android/                 # Konfigurasi native untuk build Android
+├── ios/                     # Konfigurasi native untuk build iOS
+├── lib/                     # Direktori utama kode sumber Dart
+│   ├── dashboard.dart       # UI Halaman Dashboard (Tampilan & Logika Animasi)
+│   └── main.dart            # Entry point aplikasi & Konfigurasi Tema
+├── linux/                   # Konfigurasi native untuk Linux
+├── macos/                   # Konfigurasi native untuk macOS
+├── test/                    # Folder pengujian (Unit testing)
+├── web/                     # Konfigurasi untuk aplikasi Web
+├── windows/                 # Konfigurasi native untuk Windows
+├── analysis_options.yaml    # Aturan linter untuk analisis kode Dart
+├── pubspec.yaml             # Manajemen dependencies & aset
+└── README.md                # Dokumentasi proyek
+```
+**Created by Agus Hengker**
