@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 
+// ==========================================================
+// SCREEN UTAMA: DASHBOARD
+// ==========================================================
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
 
@@ -8,8 +11,11 @@ class DashboardScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // Definisi Warna
     final Color primaryBlue = const Color(0xFF2B3A67);
-    final Color accentGold = const Color(0xFFD4A017);
-    final Color bgYellowLight = const Color(0xFFFFF9C4);
+    final Color accentGold = const Color(0xFFC69426);
+    final Color bgYellowLight = const Color(0xFFFFFDE7);
+
+    // Nilai Alpha untuk Opacity 0.1: (0.1 * 255) = 25
+    final int alpha10Percent = 25;
 
     return Scaffold(
       body: SafeArea(
@@ -40,7 +46,7 @@ class DashboardScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Icon(Icons.chat_bubble_outline, size: 30, color: primaryBlue),
+                  Icon(Icons.menu, size: 30, color: primaryBlue),
                 ],
               ),
               const SizedBox(height: 24),
@@ -55,11 +61,11 @@ class DashboardScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 4),
-              Text(
+              const Text(
                 "Selamat Datang di M-Pajak!",
                 style: TextStyle(
                   fontSize: 14,
-                  color: Colors.grey[600],
+                  color: Colors.grey,
                 ),
               ),
               const SizedBox(height: 24),
@@ -76,25 +82,24 @@ class DashboardScreen extends StatelessWidget {
                 crossAxisCount: 2,
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
-                childAspectRatio: 1.5,
+                childAspectRatio: 1.8,
                 children: [
                   _buildMenuCard("Kalkulator\nPajak", Icons.calculate, accentGold, bgYellowLight),
-                  _buildMenuCard("Reset\nEFIN", Icons.pin_invoke, accentGold, bgYellowLight),
+                  _buildMenuCard("Reset\nEFIN", Icons.looks_one, accentGold, bgYellowLight),
                   _buildMenuCard("Lokasi KKP\nTerdekat", Icons.location_on, accentGold, bgYellowLight),
                   _buildMenuCard("Peraturan\nPerpajakan", Icons.description, accentGold, bgYellowLight),
                 ],
               ),
               const SizedBox(height: 24),
 
-              // 4. TENGGAT PAJAK (BERGERAK OTOMATIS)
+              // 4. TENGGAT PAJAK (AUTO SCROLL VERTICAL)
               const Text(
                 "Tenggat Pajak",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 12),
-              // Memanggil Widget Khusus Animasi di bawah
-              const AutoScrollTaxInfo(), 
-              
+              const AutoScrollTaxInfo(),
+
               const SizedBox(height: 24),
 
               // 5. LOKASI ANDA
@@ -106,13 +111,22 @@ class DashboardScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey.shade300),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.grey.shade200, width: 1),
+                    boxShadow: [
+                      BoxShadow(
+                        // PERBAIKAN WARNING: Menggunakan withAlpha
+                        color: Colors.black.withAlpha(alpha10Percent),
+                        spreadRadius: 1,
+                        blurRadius: 3,
+                        offset: const Offset(0, 1),
+                      ),
+                    ]
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.my_location, color: Colors.black87),
+                    const Icon(Icons.my_location, color: Color(0xFF2B3A67), size: 24),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
@@ -121,10 +135,10 @@ class DashboardScreen extends StatelessWidget {
                         style: TextStyle(color: Colors.grey[700]),
                       ),
                     ),
-                    TextButton(
-                      onPressed: () {},
-                      child: Text("Ubah", style: TextStyle(color: accentGold, fontWeight: FontWeight.bold)),
-                    )
+                    Text(
+                        "Ubah",
+                        style: TextStyle(color: accentGold, fontWeight: FontWeight.bold)
+                    ),
                   ],
                 ),
               ),
@@ -164,13 +178,17 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
+  // --- Widget Pembantu ---
+
   Widget _buildMenuCard(String title, IconData icon, Color iconColor, Color bgColor) {
     return Container(
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: bgColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
@@ -179,14 +197,12 @@ class DashboardScreen extends StatelessWidget {
               color: iconColor,
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(icon, color: Colors.white, size: 24),
+            child: Icon(icon, color: Colors.white, size: 28),
           ),
-          const SizedBox(width: 12),
-          Flexible(
-            child: Text(
-              title,
-              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-            ),
+          const SizedBox(height: 8),
+          Text(
+            title,
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
           ),
         ],
       ),
@@ -194,23 +210,31 @@ class DashboardScreen extends StatelessWidget {
   }
 
   Widget _buildNavItem(IconData icon, String label) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(icon, color: Colors.white, size: 24),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(color: Colors.white, fontSize: 10),
+    return Expanded(
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {},
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, color: Colors.white, size: 24),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: const TextStyle(color: Colors.white, fontSize: 10),
+              ),
+            ],
+          ),
         ),
-      ],
+      ),
     );
   }
 }
 
 // ==========================================================
-// WIDGET KHUSUS ANIMASI TENGGAT PAJAK (AUTO SCROLL CEPAT)
+// WIDGET KHUSUS ANIMASI TENGGAT PAJAK (AUTO SCROLL VERTIKAL TERBATAS)
 // ==========================================================
 class AutoScrollTaxInfo extends StatefulWidget {
   const AutoScrollTaxInfo({super.key});
@@ -220,7 +244,7 @@ class AutoScrollTaxInfo extends StatefulWidget {
 }
 
 class _AutoScrollTaxInfoState extends State<AutoScrollTaxInfo> {
-  // Data sesuai gambar tgl.png
+
   final List<Map<String, String>> _taxData = [
     {
       "date": "31",
@@ -240,7 +264,7 @@ class _AutoScrollTaxInfoState extends State<AutoScrollTaxInfo> {
     {
       "date": "31",
       "month": "Jan",
-      "desc": "Pelaporan SPT Masa PPN Masa Desember 2026"
+      "desc": "Pelaporan SPT Masa PPN Masa Desember 2025"
     },
     {
       "date": "28",
@@ -251,19 +275,37 @@ class _AutoScrollTaxInfoState extends State<AutoScrollTaxInfo> {
 
   late ScrollController _scrollController;
   late Timer _timer;
-  double _scrollPosition = 0.0;
+  final double _itemHeight = 90.0;
+  final Color primaryBlue = const Color(0xFF2B3A67);
+  final Color accentGold = const Color(0xFFC69426);
+  // Nilai Alpha untuk Opacity 0.1: (0.1 * 255) = 25
+  final int alpha10Percent = 25;
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
-    
-    // Timer diatur agar lebih responsif dan cepat
-    _timer = Timer.periodic(const Duration(milliseconds: 30), (timer) {
+
+    _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
       if (_scrollController.hasClients) {
-        // Kecepatan gerak ditambah (semakin besar angka, semakin cepat)
-        _scrollPosition += 2.0; 
-        _scrollController.jumpTo(_scrollPosition);
+        final maxScroll = _scrollController.position.maxScrollExtent;
+        final currentScroll = _scrollController.offset;
+
+        double targetScroll = currentScroll + _itemHeight;
+
+        if (targetScroll >= maxScroll) {
+          Future.delayed(const Duration(seconds: 2), () {
+            if (_scrollController.hasClients) {
+              _scrollController.jumpTo(0.0);
+            }
+          });
+        } else {
+          _scrollController.animateTo(
+            targetScroll,
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeInOut,
+          );
+        }
       }
     });
   }
@@ -277,88 +319,140 @@ class _AutoScrollTaxInfoState extends State<AutoScrollTaxInfo> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 100, // Tinggi area kartu
-      child: ListView.builder(
-        controller: _scrollController,
-        scrollDirection: Axis.horizontal,
-        // ItemCount tidak didefinisikan agar 'infinite'
-        itemBuilder: (context, index) {
-          // Modulo logic untuk looping data terus menerus
-          final data = _taxData[index % _taxData.length];
-          
-          return Container(
-            width: 300, // Lebar per kartu
-            margin: const EdgeInsets.only(right: 16),
-            padding: const EdgeInsets.all(12),
+    final double cardHeight = 90.0;
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Kartu Kiri (Tahun 2025) - Static
+        Container(
+          height: cardHeight,
+          width: 100,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          decoration: BoxDecoration(
+            color: primaryBlue,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: const Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "Tahun",
+                style: TextStyle(color: Colors.white, fontSize: 14),
+              ),
+              SizedBox(height: 4),
+              Text(
+                "2025",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        const SizedBox(width: 12),
+
+        // Kartu Kanan (Tanggal & Keterangan) - Auto Scroll Vertikal
+        Expanded(
+          child: Container(
+            height: cardHeight,
             decoration: BoxDecoration(
-              color: Colors.white,
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade200, width: 1),
+                boxShadow: [
+                  BoxShadow(
+                    // PERBAIKAN WARNING: Menggunakan withAlpha
+                    color: Colors.black.withAlpha(alpha10Percent),
+                    spreadRadius: 1,
+                    blurRadius: 3,
+                    offset: const Offset(0, 1),
+                  ),
+                ]
+            ),
+            child: ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey.shade300),
+              child: ListView.builder(
+                controller: _scrollController,
+                scrollDirection: Axis.vertical,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: _taxData.length,
+                itemExtent: _itemHeight,
+                itemBuilder: (context, index) {
+                  final data = _taxData[index];
+
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                    child: Row(
+                      children: [
+                        // Kotak Emas Tanggal
+                        Container(
+                          width: 45,
+                          height: 60,
+                          decoration: BoxDecoration(
+                            color: accentGold,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                data["date"]!,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                              ),
+                              Text(
+                                data["month"]!,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+
+                        // Teks Keterangan
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text(
+                                "Keterangan",
+                                style: TextStyle(fontSize: 10, color: Colors.grey),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                data["desc"]!,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
             ),
-            child: Row(
-              children: [
-                // Kotak Emas Tanggal
-                Container(
-                  width: 60,
-                  height: 70,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFC69426), // Warna Emas
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        data["date"]!,
-                        style: const TextStyle(
-                          color: Colors.white, 
-                          fontWeight: FontWeight.bold, 
-                          fontSize: 20
-                        ),
-                      ),
-                      Text(
-                        data["month"]!,
-                        style: const TextStyle(
-                          color: Colors.white, 
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 12),
-                
-                // Teks Keterangan
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        "Keterangan", 
-                        style: TextStyle(fontSize: 10, color: Colors.grey)
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        data["desc"]!,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 12, 
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black87
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
+          ),
+        ),
+      ],
     );
   }
 }
