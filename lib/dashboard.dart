@@ -1,21 +1,211 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 
 // ==========================================================
-// SCREEN UTAMA: DASHBOARD
+// SCREEN UTAMA: DASHBOARD (STATEFUL)
 // ==========================================================
-class DashboardScreen extends StatelessWidget {
+class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // Definisi Warna
-    final Color primaryBlue = const Color(0xFF2B3A67);
-    final Color accentGold = const Color(0xFFC69426);
-    final Color bgYellowLight = const Color(0xFFFFFDE7);
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
 
-    // Nilai Alpha untuk Opacity 0.1: (0.1 * 255) = 25
-    final int alpha10Percent = 25;
+class _DashboardScreenState extends State<DashboardScreen> {
+  // --- STATE UNTUK BOTTOM NAVIGASI ---
+  // 0: Home, 1: Info Pajak, 2: Bayar, 3: Kartu Digital, 4: Profil
+  int _selectedIndex = 0;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    print("Navigasi ke Indeks: $index");
+  }
+
+  // Definisi Warna
+  final Color primaryBlue = const Color(0xFF2B3A67);
+  final Color accentGold = const Color(0xFFC69931);
+  final Color bgYellowLight = const Color(0xFFFFFBE0);
+  final int alpha10Percent = 25;
+
+  // --- DIMENSI BOTTOM NAV ---
+  static const double notchRadius = 35.0;
+  static const double navBarBaseHeight = 60.0;
+  static const double notchHeight = 40.0;
+
+  final double navBarStackHeight = navBarBaseHeight + notchHeight;
+
+  // Daftar Ikon dan Label untuk Bottom Nav
+  final List<Map<String, dynamic>> _navItems = [
+    {'icon': Icons.home_outlined, 'label': "Home"},
+    {'icon': Icons.info_outline, 'label': "Info Pajak"},
+    {'icon': Icons.credit_card_outlined, 'label': "Bayar", 'badge': true},
+    {'icon': Icons.article_outlined, 'label': "Kartu Digital"},
+    {'icon': Icons.person_outline, 'label': "Profil"},
+  ];
+
+  // --- Widget Pembantu Menu Card (Horizontal) ---
+
+  Widget _buildMenuCardHorizontal(String title, IconData icon, Color iconColor, Color bgColor) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // Icon (Left)
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: iconColor,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, color: Colors.white, size: 24),
+          ),
+          const SizedBox(width: 10),
+
+          // Teks (Right)
+          Expanded(
+            child: Text(
+              title,
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // --- Widget Pembantu Bottom Nav ---
+
+  // Lingkaran Putih & Ikon Navigasi (Aktif)
+  Widget _buildActiveCircle(IconData icon) {
+    final double circleDiameter = notchRadius * 2;
+    const double innerIconSize = 36;
+
+    return Container(
+      width: circleDiameter,
+      height: circleDiameter,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Center(
+        child: Icon(
+          icon,
+          color: primaryBlue,
+          size: innerIconSize,
+        ),
+      ),
+    );
+  }
+
+  // Item Navigasi Kustom (Menangani Ikon Non-Aktif dan Label Aktif/Non-Aktif)
+  Widget _buildNavItemCustom(IconData icon, String label, int index, {bool showRpBadge = false}) {
+    final bool isSelected = index == _selectedIndex;
+
+    // Jika item aktif, hanya tampilkan label dan padding kosong (lingkaran ikon di-handle di Stack utama)
+    if (isSelected) {
+      return Expanded(
+        child: InkWell(
+          onTap: () => _onItemTapped(index),
+          child: SizedBox(
+            height: navBarBaseHeight,
+            // Widget Placeholder/Teks
+            child: Center(
+              child: Padding(
+                // Padding di atas agar label berada di bawah lingkaran putih
+                padding: const EdgeInsets.only(top: 30.0),
+                child: Text(
+                  label,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    // Jika item tidak aktif, tampilkan ikon dan label di dalam kolom normal
+    return Expanded(
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => _onItemTapped(index),
+          child: SizedBox(
+            height: navBarBaseHeight,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Stack(
+                  alignment: Alignment.topRight,
+                  children: [
+                    Icon(icon, color: Colors.white, size: 24),
+                    if (showRpBadge)
+                      Positioned(
+                        right: 0,
+                        top: 0,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                          decoration: BoxDecoration(
+                            color: accentGold,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: const Text(
+                            "Rp.",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 8,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                // Label Non-Aktif
+                Text(
+                  label,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double itemWidth = screenWidth / 5;
+    final double centerActiveX = (_selectedIndex + 0.5) * itemWidth;
+    final IconData activeIcon = _navItems[_selectedIndex]['icon'];
+
 
     return Scaffold(
       body: SafeArea(
@@ -24,7 +214,7 @@ class DashboardScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 1. HEADER
+              // 1. HEADER - PERUBAHAN DI SINI UNTUK GAMBAR
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -37,12 +227,16 @@ class DashboardScreen extends StatelessWidget {
                     child: CircleAvatar(
                       backgroundColor: Colors.white,
                       radius: 24,
-                      child: Text(
-                        "djp",
-                        style: TextStyle(
-                            color: primaryBlue,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18),
+                      // MENGGANTI TEXT DENGAN IMAGE.ASSET
+                      child: Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: Image.asset(
+                          // Ganti 'logo_djp.png' sesuai nama file logo Anda
+                          'assets/images/logO.png',
+                          fit: BoxFit.contain,
+                          // Jika file tidak ditemukan, ini akan memberikan error runtime.
+                          // Pastikan sudah dideklarasikan di pubspec.yaml.
+                        ),
                       ),
                     ),
                   ),
@@ -50,7 +244,6 @@ class DashboardScreen extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 24),
-
               // 2. GREETING
               const Text(
                 "Hai, Agus Hengker!",
@@ -69,7 +262,6 @@ class DashboardScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
-
               // 3. LAYANAN LAINNYA
               const Text(
                 "Layanan Lainnya",
@@ -82,26 +274,23 @@ class DashboardScreen extends StatelessWidget {
                 crossAxisCount: 2,
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
-                childAspectRatio: 1.8,
+                childAspectRatio: 2.2,
                 children: [
-                  _buildMenuCard("Kalkulator\nPajak", Icons.calculate, accentGold, bgYellowLight),
-                  _buildMenuCard("Reset\nEFIN", Icons.looks_one, accentGold, bgYellowLight),
-                  _buildMenuCard("Lokasi KKP\nTerdekat", Icons.location_on, accentGold, bgYellowLight),
-                  _buildMenuCard("Peraturan\nPerpajakan", Icons.description, accentGold, bgYellowLight),
+                  _buildMenuCardHorizontal("Kalkulator\nPajak", Icons.calculate_outlined, accentGold, bgYellowLight),
+                  _buildMenuCardHorizontal("Reset\nEFIN", Icons.looks_one_outlined, accentGold, bgYellowLight),
+                  _buildMenuCardHorizontal("Lokasi KKP\nTerdekat", Icons.location_on_outlined, accentGold, bgYellowLight),
+                  _buildMenuCardHorizontal("Peraturan\nPerpajakan", Icons.description_outlined, accentGold, bgYellowLight),
                 ],
               ),
               const SizedBox(height: 24),
-
-              // 4. TENGGAT PAJAK (AUTO SCROLL VERTICAL)
+              // 4. TENGGAT PAJAK
               const Text(
                 "Tenggat Pajak",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 12),
               const AutoScrollTaxInfo(),
-
               const SizedBox(height: 24),
-
               // 5. LOKASI ANDA
               const Text(
                 "Lokasi Anda",
@@ -116,7 +305,6 @@ class DashboardScreen extends StatelessWidget {
                     border: Border.all(color: Colors.grey.shade200, width: 1),
                     boxShadow: [
                       BoxShadow(
-                        // PERBAIKAN WARNING: Menggunakan withAlpha
                         color: Colors.black.withAlpha(alpha10Percent),
                         spreadRadius: 1,
                         blurRadius: 3,
@@ -142,91 +330,57 @@ class DashboardScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 80),
+              SizedBox(height: navBarStackHeight),
             ],
           ),
         ),
       ),
 
-      // 6. BOTTOM NAV
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        backgroundColor: Colors.white,
-        elevation: 4,
-        shape: const CircleBorder(),
-        child: Icon(Icons.home, color: primaryBlue, size: 32),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        notchMargin: 8.0,
-        color: primaryBlue,
-        child: SizedBox(
-          height: 60,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(Icons.info_outline, "Info Pajak"),
-              _buildNavItem(Icons.payment, "Bayar"),
-              const SizedBox(width: 48),
-              _buildNavItem(Icons.credit_card, "Kartu Digital"),
-              _buildNavItem(Icons.person_outline, "Profil"),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  // --- Widget Pembantu ---
-
-  Widget _buildMenuCard(String title, IconData icon, Color iconColor, Color bgColor) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: iconColor,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(icon, color: Colors.white, size: 28),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            title,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, String label) {
-    return Expanded(
-      child: Material(
+      // 6. BOTTOM NAV - NOTCH CEMBUNG KE ATAS
+      bottomNavigationBar: Container(
+        height: navBarStackHeight,
         color: Colors.transparent,
-        child: InkWell(
-          onTap: () {},
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, color: Colors.white, size: 24),
-              const SizedBox(height: 4),
-              Text(
-                label,
-                style: const TextStyle(color: Colors.white, fontSize: 10),
+        child: Stack(
+          children: [
+            // Custom Painter untuk Dasar Biru dan Lengkungan
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: CustomPaint(
+                size: Size(screenWidth, navBarBaseHeight),
+                // Custom Painter Dinamis
+                painter: BottomNavPainterSelected(
+                  primaryBlue: primaryBlue,
+                  notchCenter: centerActiveX,
+                  notchRadius: notchRadius,
+                  notchHeight: notchHeight,
+                ),
+                child: SizedBox(
+                  height: navBarBaseHeight,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      // Item-item Navigasi Kustom
+                      _buildNavItemCustom(_navItems[0]['icon'], _navItems[0]['label'], 0),
+                      _buildNavItemCustom(_navItems[1]['icon'], _navItems[1]['label'], 1),
+                      _buildNavItemCustom(_navItems[2]['icon'], _navItems[2]['label'], 2, showRpBadge: true),
+                      _buildNavItemCustom(_navItems[3]['icon'], _navItems[3]['label'], 3),
+                      _buildNavItemCustom(_navItems[4]['icon'], _navItems[4]['label'], 4),
+                    ],
+                  ),
+                ),
               ),
-            ],
-          ),
+            ),
+
+            // Custom Circle (Lingkaran Putih dan Ikon Aktif)
+            Positioned(
+              // bottom disesuaikan
+              bottom: navBarBaseHeight - (notchRadius + 10.0),
+              left: centerActiveX - notchRadius, // Posisi dinamis
+              child: _buildActiveCircle(activeIcon), // Ikon dinamis
+            ),
+          ],
         ),
       ),
     );
@@ -234,8 +388,75 @@ class DashboardScreen extends StatelessWidget {
 }
 
 // ==========================================================
-// WIDGET KHUSUS ANIMASI TENGGAT PAJAK (AUTO SCROLL VERTIKAL TERBATAS)
+// CUSTOM PAINTER UNTUK NOTCH LENGKUNGAN (DINAMIS)
 // ==========================================================
+class BottomNavPainterSelected extends CustomPainter {
+  final Color primaryBlue;
+  final double notchCenter;
+  final double notchRadius;
+  final double notchHeight;
+
+  BottomNavPainterSelected({
+    required this.primaryBlue,
+    required this.notchCenter,
+    required this.notchRadius,
+    required this.notchHeight,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final Paint paint = Paint()..color = primaryBlue;
+    final Path path = Path();
+
+    double barHeight = size.height;
+    double r = notchRadius;
+
+    double horizontalOffset = r + 5.0;
+
+    double startCurveX = notchCenter - horizontalOffset;
+    double endCurveX = notchCenter + horizontalOffset;
+
+    double controlPointX1 = r * 0.5;
+    double controlPointX2 = r * 1.1;
+    double peakY = -notchHeight;
+
+    path.moveTo(0, barHeight);
+    path.lineTo(0, 0);
+
+    path.lineTo(math.max(0, startCurveX), 0);
+
+    // Hanya digambar jika pusat lengkungan tidak terlalu dekat ke tepi
+    if (startCurveX > 0 && endCurveX < size.width) {
+      path.cubicTo(
+          startCurveX + controlPointX1, 0,
+          notchCenter - controlPointX2, peakY,
+          notchCenter, peakY
+      );
+
+      path.cubicTo(
+          notchCenter + controlPointX2, peakY,
+          endCurveX - controlPointX1, 0,
+          endCurveX, 0
+      );
+    }
+
+    path.lineTo(size.width, 0);
+
+    path.lineTo(size.width, barHeight);
+    path.close();
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(BottomNavPainterSelected oldDelegate) =>
+      oldDelegate.notchCenter != notchCenter;
+}
+
+// ==========================================================
+// WIDGET KHUSUS ANIMASI TENGGAT PAJAK (TIDAK BERUBAH)
+// ==========================================================
+
 class AutoScrollTaxInfo extends StatefulWidget {
   const AutoScrollTaxInfo({super.key});
 
@@ -278,7 +499,6 @@ class _AutoScrollTaxInfoState extends State<AutoScrollTaxInfo> {
   final double _itemHeight = 90.0;
   final Color primaryBlue = const Color(0xFF2B3A67);
   final Color accentGold = const Color(0xFFC69426);
-  // Nilai Alpha untuk Opacity 0.1: (0.1 * 255) = 25
   final int alpha10Percent = 25;
 
   @override
@@ -324,7 +544,6 @@ class _AutoScrollTaxInfoState extends State<AutoScrollTaxInfo> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Kartu Kiri (Tahun 2025) - Static
         Container(
           height: cardHeight,
           width: 100,
@@ -352,10 +571,7 @@ class _AutoScrollTaxInfoState extends State<AutoScrollTaxInfo> {
             ],
           ),
         ),
-
         const SizedBox(width: 12),
-
-        // Kartu Kanan (Tanggal & Keterangan) - Auto Scroll Vertikal
         Expanded(
           child: Container(
             height: cardHeight,
@@ -365,7 +581,6 @@ class _AutoScrollTaxInfoState extends State<AutoScrollTaxInfo> {
                 border: Border.all(color: Colors.grey.shade200, width: 1),
                 boxShadow: [
                   BoxShadow(
-                    // PERBAIKAN WARNING: Menggunakan withAlpha
                     color: Colors.black.withAlpha(alpha10Percent),
                     spreadRadius: 1,
                     blurRadius: 3,
@@ -388,7 +603,6 @@ class _AutoScrollTaxInfoState extends State<AutoScrollTaxInfo> {
                     padding: const EdgeInsets.symmetric(horizontal: 12.0),
                     child: Row(
                       children: [
-                        // Kotak Emas Tanggal
                         Container(
                           width: 45,
                           height: 60,
@@ -419,8 +633,6 @@ class _AutoScrollTaxInfoState extends State<AutoScrollTaxInfo> {
                           ),
                         ),
                         const SizedBox(width: 12),
-
-                        // Teks Keterangan
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
