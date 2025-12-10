@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # djp
 
 A new Flutter project.
@@ -14,3 +15,7 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+=======
+# flutter_DJP
+deploy dashboard DJP
+>>>>>>> 9fd0e3089aa0dae13d5c1f5190e85c4474f6387d
