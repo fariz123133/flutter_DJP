@@ -31,9 +31,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   final int alpha10Percent = 25;
 
   // --- DIMENSI BOTTOM NAV ---
-  static const double notchRadius = 35.0;
+  static const double notchRadius = 25.0;
   static const double navBarBaseHeight = 60.0;
-  static const double notchHeight = 40.0;
+  static const double notchHeight = 18.0;
 
   final double navBarStackHeight = navBarBaseHeight + notchHeight;
 
