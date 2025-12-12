@@ -31,9 +31,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   final int alpha10Percent = 25;
 
   // --- DIMENSI BOTTOM NAV ---
-  static const double notchRadius = 35.0;
+  static const double notchRadius = 25.0;
   static const double navBarBaseHeight = 60.0;
-  static const double notchHeight = 40.0;
+  static const double notchHeight = 18.0;
 
   final double navBarStackHeight = navBarBaseHeight + notchHeight;
 
@@ -222,25 +222,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     padding: const EdgeInsets.all(2),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: accentGold, width: 2),
+                      border: Border.all(color: Colors.white, width: 0),
                     ),
                     child: CircleAvatar(
                       backgroundColor: Colors.white,
-                      radius: 24,
+                      radius: 27,
                       // MENGGANTI TEXT DENGAN IMAGE.ASSET
                       child: Padding(
-                        padding: const EdgeInsets.all(4.0),
+                        padding: const EdgeInsets.all(0.0),
                         child: Image.asset(
                           // Ganti 'logo_djp.png' sesuai nama file logo Anda
-                          'assets/images/logO.png',
+                          'assets/images/logo.png',
                           fit: BoxFit.contain,
+                          width:90,
+                          height:90,
                           // Jika file tidak ditemukan, ini akan memberikan error runtime.
                           // Pastikan sudah dideklarasikan di pubspec.yaml.
                         ),
                       ),
                     ),
                   ),
-                  Icon(Icons.menu, size: 30, color: primaryBlue),
+                  Icon(Icons.chat, size: 30, color: primaryBlue),
                 ],
               ),
               const SizedBox(height: 24),
