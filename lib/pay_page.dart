@@ -19,11 +19,14 @@ class PayPage extends StatelessWidget {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Isi form surat setoran elektronik di bawah ini dengan data yang sesuai, untuk memudahkan proses pembuatan Kode E-billing",
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 13, color: Colors.grey),
+            const Center(
+              child: Text(
+                "Isi form surat setoran elektronik di bawah ini dengan data yang sesuai, untuk memudahkan proses pembuatan Kode E-billing",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 13, color: Colors.grey),
+              ),
             ),
             const SizedBox(height: 24),
 
@@ -44,39 +47,52 @@ class PayPage extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 8),
 
-            // Dropdowns
+            // Dropdowns Utama
             _buildDropdownField("Jenis Pajak", "Pilih Jenis Pajak"),
             _buildDropdownField("Jenis Setoran", "Pilih Jenis Setoran"),
 
-            // Masa Pajak Row
+            // --- BAGIAN MASA PAJAK (YANG TADI ERROR) ---
+            _buildLabel("Masa Pajak"),
             Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Expanded(child: _buildDropdownField("Masa Pajak", "Masa Pajak")),
+                Expanded(child: _buildDropdownField("", "Masa Pajak")),
                 const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 20),
-                  child: Text("s.d."),
+                  padding: EdgeInsets.symmetric(horizontal: 12),
+                  child: Text(
+                    "s.d.",
+                    style: TextStyle(fontSize: 14, color: Colors.black87),
+                  ),
                 ),
                 Expanded(child: _buildDropdownField("", "Masa Pajak")),
               ],
             ),
+            const SizedBox(height: 16),
 
             _buildDropdownField("Tahun Pajak", "Tahun Pajak"),
 
-            // Jumlah Setoran
+            // --- JUMLAH SETORAN ---
+            _buildLabel("Jumlah Setoran"),
             Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(width: 120, child: _buildDropdownField("Jumlah Setoran", "Mata Uang")),
+                SizedBox(
+                  width: 100,
+                  child: _buildDropdownField("", "IDR"),
+                ),
                 const SizedBox(width: 12),
-                Expanded(child: _buildInputField("", "Jumlah Setoran")),
+                Expanded(child: _buildInputField("", "Masukkan Nominal")),
               ],
             ),
+            const SizedBox(height: 16),
 
             _buildInputField("Terbilang", "Terbilang", maxLines: 2),
+            const SizedBox(height: 16),
             _buildInputField("Uraian", "Uraian", maxLines: 3),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
 
             // Catatan Kuning
             Container(
@@ -92,7 +108,7 @@ class PayPage extends StatelessWidget {
                   Text("Catatan:", style: TextStyle(fontWeight: FontWeight.bold)),
                   SizedBox(height: 4),
                   Text(
-                    "Apabila ada kesalahan dalam isisan Kode Billing atau masa berlaku berakhir, maka Kode Billing dapat dibuat kembali...",
+                    "Apabila ada kesalahan dalam isian Kode Billing atau masa berlaku berakhir, maka Kode Billing dapat dibuat kembali setelah masa berlaku berakhir.",
                     style: TextStyle(fontSize: 12),
                   ),
                 ],
@@ -104,70 +120,101 @@ class PayPage extends StatelessWidget {
             // Tombol
             SizedBox(
               width: double.infinity,
-              height: 50,
+              height: 55,
               child: ElevatedButton(
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF2B3A67),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                  elevation: 4,
                 ),
-                child: const Text("Buat Kode Billing", style: TextStyle(color: Colors.white)),
+                child: const Text(
+                    "Buat Kode Billing",
+                    style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)
+                ),
               ),
             ),
-            const SizedBox(height: 100), // Spasi agar tidak tertutup Navbar
+            const SizedBox(height: 100),
           ],
         ),
       ),
     );
   }
 
-  // Helper Widget Input
+  // --- HELPER WIDGETS ---
+
+  // Fungsi Label yang tadi merah
+  Widget _buildLabel(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8, left: 2),
+      child: Text(
+        text,
+        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+      ),
+    );
+  }
+
+  // Helper Input Field (Diperbaiki agar spasi label kondisional)
   Widget _buildInputField(String label, String hint, {int maxLines = 1}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (label.isNotEmpty) Text(label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-        const SizedBox(height: 8),
+        if (label.isNotEmpty) ...[
+          Text(label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+          const SizedBox(height: 8),
+        ],
         TextField(
           maxLines: maxLines,
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: const TextStyle(color: Colors.grey, fontSize: 13),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-            enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey.shade300), borderRadius: BorderRadius.circular(8)),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            filled: true,
+            fillColor: Colors.grey.shade50,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: Colors.grey.shade300),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: Colors.grey.shade300),
+            ),
           ),
         ),
       ],
     );
   }
 
-  // Helper Widget Dropdown
+  // Helper Dropdown Field (Diperbaiki agar spasi label kondisional)
   Widget _buildDropdownField(String label, String hint) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (label.isNotEmpty) Text(label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-        const SizedBox(height: 8),
+        if (label.isNotEmpty) ...[
+          Text(label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+          const SizedBox(height: 8),
+        ],
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
+            color: Colors.grey.shade50,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(color: Colors.grey.shade300),
           ),
           child: DropdownButtonHideUnderline(
             child: DropdownButton<String>(
               isExpanded: true,
-              hint: Text(hint, style: const TextStyle(fontSize: 13)),
-              items: const[
-                DropdownMenuItem(value:"1", child:Text ("PPh Pasal 21")),
-                DropdownMenuItem(value:"2", child:Text ("PPh Pasal 22")),
+              hint: Text(hint, style: const TextStyle(fontSize: 13, color: Colors.grey)),
+              items: const [
+                DropdownMenuItem(value: "1", child: Text("PPh Pasal 21", style: TextStyle(fontSize: 13))),
+                DropdownMenuItem(value: "2", child: Text("PPh Pasal 22", style: TextStyle(fontSize: 13))),
               ],
               onChanged: (val) {},
             ),
           ),
         ),
-        const SizedBox(height: 16),
+        // Kita hapus SizedBox(height: 16) di sini agar tidak merusak Row.
+        // Spasi antar field diatur manual di Column utama.
       ],
     );
   }

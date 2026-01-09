@@ -5,7 +5,7 @@ class InfoPajakPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // List data dummy untuk banner (Ganti path sesuai asset kamu nanti)
+    // List data dummy untuk banner
     final List<String> banners = [
       '/assets/images/banner/1.jpg',
       '/assets/images/banner/2.jpg',
@@ -15,6 +15,7 @@ class InfoPajakPage extends StatelessWidget {
       '/assets/images/banner/8.jpeg',
     ];
 
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -22,9 +23,7 @@ class InfoPajakPage extends StatelessWidget {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
-          onPressed: () {
-            // Logika kembali jika diperlukan
-          },
+          onPressed: () => Navigator.maybePop(context),
         ),
         title: const Text(
           "Informasi Seputar Perpajakan",
@@ -40,40 +39,123 @@ class InfoPajakPage extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
         itemCount: banners.length,
         itemBuilder: (context, index) {
-          return _buildInfoBanner(banners[index]);
+          return _buildInfoBanner(context, banners[index]);
         },
       ),
     );
   }
 
-  Widget _buildInfoBanner(String imageUrl) {
+  Widget _buildInfoBanner(BuildContext context, String imageUrl) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 20),
       width: double.infinity,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20), // Membuat sudut membulat
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(20),
-        child: Image.network(
-          imageUrl,
-          fit: BoxFit.cover,
-          height: 180, // Tinggi disesuaikan agar simetris
-          errorBuilder: (context, error, stackTrace) {
-            // Fallback jika gambar tidak ditemukan
-            return Container(
-              height: 180,
-              color: Colors.grey[300],
-              child: const Icon(Icons.image, size: 50, color: Colors.grey),
-            );
-          },
+        child: Stack(
+          children: [
+            // 1. Gambar Banner
+            Image.network(
+              imageUrl,
+              fit: BoxFit.cover,
+              height: 190,
+              width: double.infinity,
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  height: 190,
+                  color: Colors.grey[300],
+                  child: const Icon(Icons.image, size: 50, color: Colors.grey),
+                );
+              },
+            ),
+
+            // 2. Overlay Gradasi Hitam (Agar teks terbaca)
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                height: 80,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                    colors: [
+                      Colors.black.withOpacity(0.8),
+                      Colors.transparent,
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+            // 3. Teks Info Selengkapnya
+            Positioned(
+              bottom: 15,
+              left: 20,
+              right: 15,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        "Update Perpajakan Terbaru",
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 11,
+                        ),
+                      ),
+                      Text(
+                        "Info Selengkapnya",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFC69931), // Warna emas aksen
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.arrow_forward_ios,
+                      color: Colors.white,
+                      size: 14,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // 4. InkWell untuk efek klik
+            Positioned.fill(
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {
+                    // Logika ketika banner diklik
+                    print("Banner diklik!");
+                  },
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
