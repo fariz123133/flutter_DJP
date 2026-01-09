@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dashboard_page.dart';
+import 'infopajak_page.dart';
 import 'pay_page.dart';
 import 'dart:math' as math;
 
@@ -25,7 +26,7 @@ class _MainScreenState extends State<MainScreen> {
   // Daftar Halaman
   final List<Widget> _pages = [
     const DashboardPage(), // Indeks 0
-    const PlaceholderPage(title: "Info Pajak"), // Indeks 1
+    const InfoPajakPage(), // Indeks 1
     const PayPage(),       // Indeks 2
     const PlaceholderPage(title: "Kartu Digital"), // Indeks 3
     const PlaceholderPage(title: "Profil"), // Indeks 4
