@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'dart:math' as math;
 
 // ==========================================================
 // SCREEN UTAMA: DASHBOARD (STATEFUL)
@@ -13,96 +12,146 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  // Definisi Warna
+
   final Color primaryBlue = const Color(0xFF2B3A67);
-  final Color accentGold = const Color(0xFFC69931);
+  final Color accentGold  = const Color(0xFFC69931);
   final Color bgYellowLight = const Color(0xFFFFFBE0);
+
+  String userAddress = "Jalan Genuksari RT. 04 / RW. 05, Semarang";
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       bottom: false,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // --- HEADER ---
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  CircleAvatar(
-                    backgroundColor: Colors.white,
-                    radius: 27,
-                    child: Image.asset('assets/images/logo.png', fit: BoxFit.contain),
-                  ),
-                  Icon(Icons.chat, size: 30, color: primaryBlue),
-                ],
-              ),
-              const SizedBox(height: 24),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
 
-              // --- GREETING ---
-              const Text("Hai, Agus Hengker!",
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-              const Text("Selamat Datang di M-Pajak!",
-                  style: TextStyle(fontSize: 14, color: Colors.grey)),
-              const SizedBox(height: 24),
+            // HEADER
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                CircleAvatar(
+                  backgroundColor: Colors.white,
+                  radius: 27,
+                  child: Image.asset('assets/images/logo.png'),
+                ),
+                Icon(Icons.chat, size: 30, color: primaryBlue),
+              ],
+            ),
+            const SizedBox(height: 24),
 
-              // --- MENU GRID ---
-              const Text("Layanan Lainnya",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-              const SizedBox(height: 12),
-              GridView.count(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                crossAxisCount: 2,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 2.2,
-                children: [
-                  _buildMenuCardHorizontal("Kalkulator Pajak", Icons.calculate_outlined),
-                  _buildMenuCardHorizontal("Reset EFIN", Icons.looks_one_outlined),
-                  _buildMenuCardHorizontal("Lokasi KKP", Icons.location_on_outlined),
-                  _buildMenuCardHorizontal("Peraturan", Icons.description_outlined),
-                ],
-              ),
-              const SizedBox(height: 24),
+            // GREETING
+            const Text("Hai, Agus Hengker!",
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+            const Text("Selamat Datang di M-Pajak!",
+                style: TextStyle(fontSize: 14, color: Colors.grey)),
+            const SizedBox(height: 24),
 
-              // --- TENGGAT PAJAK ---
-              const Text("Tenggat Pajak",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-              const SizedBox(height: 12),
+            // MENU GRID
+            const Text("Layanan Lainnya",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+            const SizedBox(height: 12),
+            GridView.count(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.zero,
+              crossAxisCount: 2,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 2.2,
+              children: [
+                _buildMenuCard("Kalkulator Pajak", Icons.calculate_outlined),
+                _buildMenuCard("Reset EFIN", Icons.looks_one_outlined),
+                _buildMenuCard("Lokasi KKP", Icons.location_on_outlined),
+                _buildMenuCard("Peraturan", Icons.description_outlined),
+              ],
+            ),
 
-              // WIDGET AUTO SCROLL DI SINI
-              const AutoScrollTaxInfo(),
+            const SizedBox(height: 20),
 
-              const SizedBox(height: 100), // Spasi agar tidak tertutup Navbar
-            ],
-          ),
+            // TENGGAT
+            const Text("Tenggat Pajak",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+            const SizedBox(height: 8),
+
+            const AutoScrollTaxInfo(),
+            const SizedBox(height: 20),
+
+            // LOKASI
+            _buildLocationSection(),
+
+            const SizedBox(height: 100),
+          ],
         ),
-      );
+      ),
+    );
   }
 
-  Widget _buildMenuCardHorizontal(String title, IconData icon) {
+  // MENU CARD
+  Widget _buildMenuCard(String title, IconData icon) {
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-          color: bgYellowLight, borderRadius: BorderRadius.circular(12)),
+        color: bgYellowLight,
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
-                color: accentGold, borderRadius: BorderRadius.circular(8)),
-            child: Icon(icon, color: Colors.white, size: 24),
+              color: accentGold,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, color: Colors.white),
           ),
           const SizedBox(width: 10),
           Expanded(
-              child: Text(title,
-                  style:
-                  const TextStyle(fontSize: 14, fontWeight: FontWeight.w600))),
+            child: Text(title,
+                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+          ),
         ],
       ),
+    );
+  }
+
+  // LOKASI ANDA
+  Widget _buildLocationSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text("Lokasi Anda",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+        const SizedBox(height: 12),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.grey.shade200),
+            boxShadow: const [
+              BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 2)),
+            ],
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.my_location, color: primaryBlue),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(userAddress,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontSize: 13)),
+              ),
+              Text("Ubah",
+                  style: TextStyle(color: accentGold, fontWeight: FontWeight.bold))
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
