@@ -8,12 +8,12 @@ class InfoPajakPage extends StatelessWidget {
   Widget build(BuildContext context) {
     // List data dummy untuk banner
     final List<String> banners = [
-      '/assets/images/banner/1.jpg',
-      '/assets/images/banner/2.jpg',
-      '/assets/images/banner/3.jpg',
-      '/assets/images/banner/4.jpg',
-      '/assets/images/banner/6.jpg',
-      '/assets/images/banner/8.jpeg',
+      '/assets/images/1.jpg',
+      '/assets/images/2.jpg',
+      '/assets/images/3.jpg',
+      '/assets/images/4.jpg',
+      '/assets/images/6.jpg',
+      '/assets/images/8.jpeg',
     ];
 
 
