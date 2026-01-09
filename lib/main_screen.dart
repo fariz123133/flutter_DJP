@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
-import 'dashboard_page.dart';
-import 'pay_page.dart';
 import 'dart:math' as math;
+
+// --- IMPORT HALAMAN TERPISAH ---
+import 'dashboard_page.dart';      // Halaman Dashboard
+import 'pay_page.dart';            // Halaman Bayar
+import 'profile_page.dart';        // Halaman Profil
+import 'kartu_digital_page.dart';  // Halaman Kartu Digital
+import 'infopajak_page.dart';      // Halaman Info Pajak (BARU DITAMBAHKAN)
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -13,7 +18,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
-  // --- KONFIGURASI DIMENSI (Sesuai homepakenavbarbtul.dart) ---
+  // --- KONFIGURASI DIMENSI ---
   static const double notchRadius = 25.0;
   static const double navBarBaseHeight = 60.0;
   static const double notchHeight = 18.0;
@@ -22,16 +27,17 @@ class _MainScreenState extends State<MainScreen> {
   final Color primaryBlue = const Color(0xFF2B3A67);
   final Color accentGold = const Color(0xFFC69931);
 
-  // Daftar Halaman
-  final List<Widget> _pages = [
-    const DashboardPage(), // Indeks 0
-    const PlaceholderPage(title: "Info Pajak"), // Indeks 1
-    const PayPage(),       // Indeks 2
-    const PlaceholderPage(title: "Kartu Digital"), // Indeks 3
-    const PlaceholderPage(title: "Profil"), // Indeks 4
+  // --- DAFTAR HALAMAN ---
+  // Di sini kita memanggil Class dari file-file yang terpisah
+  late final List<Widget> _pages = [
+    const DashboardPage(),        // Index 0: Home
+    const InfoPajakPage(),        // Index 1: Info Pajak (SUDAH DIGANTI)
+    const PayPage(),              // Index 2: Bayar
+    const KartuDigitalPage(),     // Index 3: Kartu Digital
+    const ProfilePage(),          // Index 4: Profil
   ];
 
-  // Daftar Ikon dan Label (Ditambah properti badge)
+  // Daftar Ikon & Label
   final List<Map<String, dynamic>> _navItems = [
     {'icon': Icons.home_outlined, 'label': "Home"},
     {'icon': Icons.info_outline, 'label': "Info Pajak"},
@@ -54,9 +60,9 @@ class _MainScreenState extends State<MainScreen> {
     final IconData activeIcon = _navItems[_selectedIndex]['icon'];
 
     return Scaffold(
-      // Menggunakan IndexedStack agar state halaman (seperti scroll) tidak hilang
       extendBody: true,
       backgroundColor: Colors.white,
+      // Menggunakan IndexedStack agar halaman tidak ter-reset saat pindah tab
       body: IndexedStack(
         index: _selectedIndex,
         children: _pages,
@@ -107,10 +113,9 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  // Fungsi pembuat item navigasi (Sesuai logika dashboard)
+  // --- Widget Helper Navigasi ---
   Widget _buildNavItemCustom(IconData icon, String label, int index, {bool showRpBadge = false}) {
     final bool isSelected = index == _selectedIndex;
-
     return Expanded(
       child: Material(
         color: Colors.transparent,
@@ -129,30 +134,20 @@ class _MainScreenState extends State<MainScreen> {
                       Icon(icon, color: Colors.white, size: 24),
                       if (showRpBadge)
                         Positioned(
-                          right: 0,
-                          top: 0,
+                          right: 0, top: 0,
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-                            decoration: BoxDecoration(
-                              color: accentGold,
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: const Text(
-                              "Rp.",
-                              style: TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold),
-                            ),
+                            decoration: BoxDecoration(color: accentGold, borderRadius: BorderRadius.circular(6)),
+                            child: const Text("Rp.", style: TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold)),
                           ),
                         ),
                     ],
                   ),
                 ] else ...[
-                  const SizedBox(height: 20), // Spacer untuk memberi ruang lingkaran di atas
+                  const SizedBox(height: 20),
                 ],
                 const SizedBox(height: 4),
-                Text(
-                  label,
-                  style: const TextStyle(color: Colors.white, fontSize: 10),
-                ),
+                Text(label, style: const TextStyle(color: Colors.white, fontSize: 10)),
               ],
             ),
           ),
@@ -161,7 +156,6 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  // Lingkaran Putih & Ikon Navigasi Aktif
   Widget _buildActiveCircle(IconData icon) {
     return Container(
       width: notchRadius * 2,
@@ -170,21 +164,15 @@ class _MainScreenState extends State<MainScreen> {
         color: Colors.white,
         shape: BoxShape.circle,
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            blurRadius: 6,
-            offset: const Offset(0, 3),
-          ),
+          BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 6, offset: const Offset(0, 3)),
         ],
       ),
-      child: Center(
-        child: Icon(icon, color: primaryBlue, size: 30),
-      ),
+      child: Center(child: Icon(icon, color: primaryBlue, size: 30)),
     );
   }
 }
 
-// --- CUSTOM PAINTER (Pindahkan ke sini agar tidak error) ---
+// --- CUSTOM PAINTER (Tetap di sini) ---
 class BottomNavPainterSelected extends CustomPainter {
   final Color primaryBlue;
   final double notchCenter;
@@ -202,14 +190,11 @@ class BottomNavPainterSelected extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final Paint paint = Paint()..color = primaryBlue;
     final Path path = Path();
-
     double barHeight = size.height;
     double r = notchRadius;
     double horizontalOffset = r + 5.0;
-
     double startCurveX = notchCenter - horizontalOffset;
     double endCurveX = notchCenter + horizontalOffset;
-
     double controlPointX1 = r * 0.5;
     double controlPointX2 = r * 1.1;
     double peakY = -notchHeight;
@@ -217,33 +202,21 @@ class BottomNavPainterSelected extends CustomPainter {
     path.moveTo(0, barHeight);
     path.lineTo(0, 0);
     path.lineTo(math.max(0, startCurveX), 0);
-
     if (startCurveX > 0 && endCurveX < size.width) {
-      path.cubicTo(
-          startCurveX + controlPointX1, 0,
-          notchCenter - controlPointX2, peakY,
-          notchCenter, peakY
-      );
-      path.cubicTo(
-          notchCenter + controlPointX2, peakY,
-          endCurveX - controlPointX1, 0,
-          endCurveX, 0
-      );
+      path.cubicTo(startCurveX + controlPointX1, 0, notchCenter - controlPointX2, peakY, notchCenter, peakY);
+      path.cubicTo(notchCenter + controlPointX2, peakY, endCurveX - controlPointX1, 0, endCurveX, 0);
     }
-
     path.lineTo(size.width, 0);
     path.lineTo(size.width, barHeight);
     path.close();
-
     canvas.drawPath(path, paint);
   }
 
   @override
-  bool shouldRepaint(BottomNavPainterSelected oldDelegate) =>
-      oldDelegate.notchCenter != notchCenter;
+  bool shouldRepaint(BottomNavPainterSelected oldDelegate) => oldDelegate.notchCenter != notchCenter;
 }
 
-// Placeholder untuk halaman yang belum dibuat
+// Hapus PlaceholderPage jika tidak digunakan lagi, atau biarkan sebagai cadangan.
 class PlaceholderPage extends StatelessWidget {
   final String title;
   const PlaceholderPage({super.key, required this.title});
