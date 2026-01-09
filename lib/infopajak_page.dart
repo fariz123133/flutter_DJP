@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-=======
+
 import 'package:flutter/material.dart';
 
 class InfoPajakPage extends StatelessWidget {
@@ -163,4 +162,4 @@ class InfoPajakPage extends StatelessWidget {
     );
   }
 }
->>>>>>> 1670ffef32f89ac839cce4b039cd2df4cc63ea7a
+
