@@ -1,6 +1,7 @@
+import 'package:djp/pay_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'dashboard.dart'; // Import file dashboard yang baru dibuat
+import 'main_screen.dart'; // Import file dashboard yang baru dibuat
 
 void main() {
   runApp(const MyApp());
@@ -16,14 +17,14 @@ class MyApp extends StatelessWidget {
       title: 'M-Pajak Clone',
       theme: ThemeData(
         // Kita set Font secara global di sini, 
-        // jadi di dashboard.dart tidak perlu import google_fonts lagi
+        // jadi di dashboard_page.dart tidak perlu import google_fonts lagi
         textTheme: GoogleFonts.poppinsTextTheme(),
         primarySwatch: Colors.blue,
         scaffoldBackgroundColor: Colors.white,
         useMaterial3: true,
       ),
-      // Panggil Class dari file dashboard.dart
-      home: const DashboardScreen(),
+      // Panggil Class dari file dashboard_page.dart
+      home: const MainScreen(),
     );
   }
 }
