@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart'; // Untuk mengenali perintah Provider.of
+import 'user_provider.dart';          // Untuk mengenali class UserProvider yang kita buat
 import 'main_screen.dart'; // Import main_screen
 
 class LoginPage extends StatefulWidget {
@@ -132,6 +134,11 @@ class _LoginPageState extends State<LoginPage> {
                     height: 55,
                     child: ElevatedButton(
                       onPressed: () {
+                        //simpan ke provider
+                        Provider.of<UserProvider>(context, listen: false).login(
+                          _usernameController.text,
+                          _nikController.text,
+                        );
                         // Navigasi ke MainScreen agar navbar muncul
                         Navigator.pushReplacement(
                           context,

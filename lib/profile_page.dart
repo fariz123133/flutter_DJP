@@ -1,10 +1,45 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'user_provider.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
+  //popup edit
+  void _showEditDialog(BuildContext context, UserProvider userProv){
+    TextEditingController emailController = TextEditingController(text:userProv.email);
+    TextEditingController phoneController = TextEditingController(text: userProv.phone);
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Edit Profil"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(controller: emailController, decoration: const InputDecoration(labelText: "Email")),
+            TextField(controller: phoneController, decoration: const InputDecoration(labelText: "Nomor Telepon")),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text("Batal")),
+          ElevatedButton(
+              onPressed: () {
+                userProv.updateProfile(emailController.text, phoneController.text);
+                Navigator.pop(context);
+              },
+              child: const Text("Simpan")
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    //pantau data user
+    final userProv = Provider.of<UserProvider>(context);
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
@@ -52,77 +87,40 @@ class ProfilePage extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
               child: Column(
                 children: [
-                  const Align(
-                    alignment: Alignment.topRight,
-                    child: Icon(Icons.hexagon_outlined, color: Color(0xFF2B3A67), size: 32),
-                  ),
-                  
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 60),
 
                   // FOTO PROFIL
-                  Container(
-                    width: 130,
-                    height: 130,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 4),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 10,
-                          offset: const Offset(0, 5),
-                        ),
-                      ],
-                      image: const DecorationImage(
-                        image: AssetImage('assets/images/rafa.jpg'), 
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+                  const CircleAvatar(
+                    radius: 65,
+                    backgroundImage: AssetImage('assets/images/rafa.jpg'),
                   ),
-
                   const SizedBox(height: 16),
-
-                  // Nama
-                  const Text(
-                    "Agus Hengker",
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
+                  Text(
+                    userProv.username.isEmpty ? "Agus Hengker" : userProv.username,
+                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                   ),
-
                   const SizedBox(height: 4),
-
-                  // Tombol Edit
                   GestureDetector(
-                    onTap: () {},
-                    child: Row(
+                    onTap: () => _showEditDialog(context, userProv),
+                    child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Text(
-                          "Ubah Profil",
-                          style: TextStyle(
-                            color: Color(0xFFC69931),
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                          ),
-                        ),
+                      children: [
+                        Text("Ubah Profil", style: TextStyle(color: Color(0xFFC69931), fontWeight: FontWeight.bold)),
                         SizedBox(width: 4),
                         Icon(Icons.edit, size: 14, color: Color(0xFFC69931)),
                       ],
                     ),
                   ),
 
+
                   const SizedBox(height: 30),
 
                   // --- FORM FIELD ---
-                  _buildProfileField("NIK", "1234567812349098"),
-                  _buildProfileField("NPWP", "12.129.1293.1-777.999"),
-                  _buildProfileField("Email", "agushengkerperopesional@gmail.com"),
-                  _buildProfileField("Nomor Telepon", "088237847162"),
-                  
-                  const SizedBox(height: 100), 
+                  //ambil dari provider
+                  _buildProfileField("NIK/NPWP", userProv.nik),
+                  _buildProfileField("Email", userProv.email),
+                  _buildProfileField("Nomor Telepon", userProv.phone),
+
                 ],
               ),
             ),
@@ -138,31 +136,16 @@ class ProfilePage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: TextStyle(
-              color: Colors.grey[400],
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
+          Text(label, style: TextStyle(color: Colors.grey[400], fontSize: 12)),
           const SizedBox(height: 6),
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: Colors.grey.shade300),
             ),
-            child: Text(
-              value,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.black87,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
+            child: Text(value, style: const TextStyle(fontWeight: FontWeight.w500)),
           ),
         ],
       ),
