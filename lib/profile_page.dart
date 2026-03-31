@@ -6,28 +6,58 @@ class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
   //popup edit
-  void _showEditDialog(BuildContext context, UserProvider userProv){
-    TextEditingController emailController = TextEditingController(text:userProv.email);
+  void _showEditDialog(BuildContext context, UserProvider userProv) {
+    // [MODIFIKASI]: Menambahkan controller untuk NIK
+    TextEditingController nikController = TextEditingController(text: userProv.nik);
+    TextEditingController emailController = TextEditingController(text: userProv.email);
     TextEditingController phoneController = TextEditingController(text: userProv.phone);
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text("Edit Profil"),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(controller: emailController, decoration: const InputDecoration(labelText: "Email")),
-            TextField(controller: phoneController, decoration: const InputDecoration(labelText: "Nomor Telepon")),
-          ],
+        // [MODIFIKASI]: Membungkus Column dengan SingleChildScrollView agar tidak error saat keyboard muncul
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nikController, 
+                decoration: const InputDecoration(labelText: "NIK/NPWP"),
+                keyboardType: TextInputType.number, // Membuka keyboard angka
+              ),
+              TextField(
+                controller: emailController, 
+                decoration: const InputDecoration(labelText: "Email"),
+                keyboardType: TextInputType.emailAddress,
+              ),
+              TextField(
+                controller: phoneController, 
+                decoration: const InputDecoration(labelText: "Nomor Telepon"),
+                keyboardType: TextInputType.phone,
+              ),
+            ],
+          ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("Batal")),
+          TextButton(
+            onPressed: () => Navigator.pop(context), 
+            child: const Text("Batal")
+          ),
           ElevatedButton(
               onPressed: () {
-                userProv.updateProfile(emailController.text, phoneController.text);
+                // [MODIFIKASI]: Memasukkan nikController ke dalam fungsi update
+                userProv.updateProfile(
+                  nikController.text, 
+                  emailController.text, 
+                  phoneController.text
+                );
                 Navigator.pop(context);
               },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFC69931), // Warna tombol menyesuaikan tema DJP
+                foregroundColor: Colors.white,
+              ),
               child: const Text("Simpan")
           ),
         ],
@@ -111,7 +141,6 @@ class ProfilePage extends StatelessWidget {
                       ],
                     ),
                   ),
-
 
                   const SizedBox(height: 30),
 

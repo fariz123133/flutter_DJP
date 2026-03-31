@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 class UserProvider with ChangeNotifier {
   // Data default atau data yang diisi saat login
   String _username = "";
-  String _nik = "";
-  String _email = "user@example.com"; // Default
-  String _phone = "08123456789";    // Default
+  String _nik = "1234567890123456"; // Default NIK/NPWP (Bisa disesuaikan)
+  String _email = "user@example.com"; 
+  String _phone = "08123456789";    
 
   // Getter
   String get username => _username;
@@ -21,7 +21,9 @@ class UserProvider with ChangeNotifier {
   }
 
   // Fungsi untuk update data dari profil (Edit)
-  void updateProfile(String newEmail, String newPhone) {
+  // [MODIFIKASI]: Menambahkan parameter newNik
+  void updateProfile(String newNik, String newEmail, String newPhone) {
+    _nik = newNik;
     _email = newEmail;
     _phone = newPhone;
     notifyListeners();
